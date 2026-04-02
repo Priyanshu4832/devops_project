@@ -1,0 +1,34 @@
+2026-04-02 20:29:11,130 - INFO - Loading AI Models...
+2026-04-02 20:29:12,853 - INFO - HTTP Request: HEAD https://huggingface.co/distilbert/distilbert-base-uncased-finetuned-sst-2-english/resolve/714eb0f/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-02 20:29:12,888 - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english/714eb0fa89d2f80546fda750413ed43d93601a13/config.json "HTTP/1.1 200 OK"
+2026-04-02 20:29:12,955 - INFO - HTTP Request: GET https://huggingface.co/api/resolve-cache/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english/714eb0fa89d2f80546fda750413ed43d93601a13/config.json "HTTP/1.1 200 OK"
+2026-04-02 20:29:13,671 - INFO - HTTP Request: HEAD https://huggingface.co/distilbert/distilbert-base-uncased-finetuned-sst-2-english/resolve/714eb0f/model.safetensors "HTTP/1.1 302 Found"
+2026-04-02 20:29:13,686 - WARNING - Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-04-02 20:29:14,404 - INFO - HTTP Request: GET https://huggingface.co/api/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english/xet-read-token/714eb0fa89d2f80546fda750413ed43d93601a13 "HTTP/1.1 200 OK"
+2026-04-02 20:29:37,220 - INFO - HTTP Request: HEAD https://huggingface.co/distilbert/distilbert-base-uncased-finetuned-sst-2-english/resolve/714eb0f/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-02 20:29:37,229 - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english/714eb0fa89d2f80546fda750413ed43d93601a13/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-04-02 20:29:37,240 - INFO - HTTP Request: GET https://huggingface.co/api/resolve-cache/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english/714eb0fa89d2f80546fda750413ed43d93601a13/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-04-02 20:29:37,529 - INFO - HTTP Request: GET https://huggingface.co/api/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english/tree/714eb0f/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-04-02 20:29:37,795 - INFO - HTTP Request: GET https://huggingface.co/api/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-04-02 20:29:38,112 - INFO - HTTP Request: HEAD https://huggingface.co/distilbert/distilbert-base-uncased-finetuned-sst-2-english/resolve/714eb0f/vocab.txt "HTTP/1.1 307 Temporary Redirect"
+2026-04-02 20:29:38,124 - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english/714eb0fa89d2f80546fda750413ed43d93601a13/vocab.txt "HTTP/1.1 200 OK"
+2026-04-02 20:29:38,139 - INFO - HTTP Request: GET https://huggingface.co/api/resolve-cache/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english/714eb0fa89d2f80546fda750413ed43d93601a13/vocab.txt "HTTP/1.1 200 OK"
+2026-04-02 20:29:38,413 - INFO - HTTP Request: HEAD https://huggingface.co/distilbert/distilbert-base-uncased-finetuned-sst-2-english/resolve/714eb0f/tokenizer.json "HTTP/1.1 404 Not Found"
+2026-04-02 20:29:38,755 - INFO - HTTP Request: HEAD https://huggingface.co/distilbert/distilbert-base-uncased-finetuned-sst-2-english/resolve/714eb0f/added_tokens.json "HTTP/1.1 404 Not Found"
+2026-04-02 20:29:39,063 - INFO - HTTP Request: HEAD https://huggingface.co/distilbert/distilbert-base-uncased-finetuned-sst-2-english/resolve/714eb0f/special_tokens_map.json "HTTP/1.1 404 Not Found"
+2026-04-02 20:29:39,370 - INFO - HTTP Request: HEAD https://huggingface.co/distilbert/distilbert-base-uncased-finetuned-sst-2-english/resolve/714eb0f/chat_template.jinja "HTTP/1.1 404 Not Found"
+2026-04-02 20:29:42,366 - INFO - Models loaded successfully.
+2026-04-02 20:29:42,422 - ERROR - Form data requires "python-multipart" to be installed. 
+You can install "python-multipart" with: 
+
+pip install python-multipart
+
+2026-04-02 20:32:48,845 - INFO - Loading AI Models...
+2026-04-02 20:32:49,819 - INFO - HTTP Request: HEAD https://huggingface.co/distilbert/distilbert-base-uncased-finetuned-sst-2-english/resolve/714eb0f/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-02 20:32:49,888 - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english/714eb0fa89d2f80546fda750413ed43d93601a13/config.json "HTTP/1.1 200 OK"
+2026-04-02 20:32:50,573 - INFO - HTTP Request: GET https://huggingface.co/api/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english/tree/714eb0f/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-04-02 20:32:50,959 - INFO - HTTP Request: GET https://huggingface.co/api/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-04-02 20:32:51,248 - INFO - Models loaded successfully.
+2026-04-02 20:33:42,199 - INFO - Image classification request received: Plain-Dosa.jpg
+2026-04-02 20:34:26,766 - INFO - Sentiment request received for text: 'i am having a bad day'
+2026-04-02 20:34:54,146 - INFO - Image classification request received: ebrar-soyturk--QZtfd6fpFI-unsplash.jpg
