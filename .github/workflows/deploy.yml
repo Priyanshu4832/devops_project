@@ -1,0 +1,22 @@
+name: Deploy to Hugging Face Spaces
+
+# This tells GitHub to run this script whenever you push to the 'main' branch
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Required for pushing to Hugging Face
+
+      - name: Push to Hugging Face
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          git remote add hf https://broww456:$HF_TOKEN@huggingface.co/spaces/broww456/devops
+          git push hf main --force
