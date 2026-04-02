@@ -1,4 +1,5 @@
 from fastapi import FastAPI, UploadFile, File
+from fastapi.responses import HTMLResponse
 from transformers import pipeline
 from PIL import Image
 import torch
@@ -10,33 +11,22 @@ import logging
 logging.basicConfig(filename="api_logs.log", level=logging.INFO, 
                     format='%(asctime)s - %(levelname)s - %(message)s')
 
-app = FastAPI(title="Multi-Modal AI DevOps Pipeline", version="1.0")
+app = FastAPI(title="Multi-Modal AI DevOps Pipeline", version="2.0")
 
 # Load Models 
 logging.info("Loading AI Models...")
-
-# Text Model: Hugging Face Sentiment Analysis
 sentiment_model = pipeline("sentiment-analysis")
-
-# Image Model: ResNet18 (Standard)
-
 image_model = models.resnet18(weights=models.ResNet18_Weights.DEFAULT)
 image_model.eval() 
 
-# Image transformations needed for ResNet
 transform = transforms.Compose([
     transforms.Resize((224, 224)),
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
 ])
-
 logging.info("Models loaded successfully.")
 
-# 3. Create Endpoints
-
-@app.get("/")
-def home():
-    return {"message": "AI DevOps Pipeline is Active. Go to /docs to test the API."}
+# --- API ENDPOINTS ---
 
 @app.post("/sentiment")
 def analyze_sentiment(text: str):
@@ -47,16 +37,79 @@ def analyze_sentiment(text: str):
 @app.post("/classify-image")
 def classify_image(file: UploadFile = File(...)):
     logging.info(f"Image classification request received: {file.filename}")
-    
-    # Read and transform the image
     image = Image.open(file.file).convert('RGB')
     img_tensor = transform(image).unsqueeze(0)
-
-    # Run the model
     with torch.no_grad():
         outputs = image_model(img_tensor)
-    
-    # Get the predicted class ID (To keep it simple, we just return the raw class ID number)
     _, predicted = torch.max(outputs, 1)
-    
     return {"filename": file.filename, "class_id": predicted.item(), "model_version": "resnet18-v1"}
+
+# --- THE FRONTEND DASHBOARD ---
+
+@app.get("/", response_class=HTMLResponse)
+def home():
+    html_content = """
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>AI DevOps Pipeline</title>
+        <style>
+            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background-color: #f4f7f6; color: #333; }
+            .container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+            h1 { color: #2c3e50; text-align: center; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+            .card { border: 1px solid #eaeaea; padding: 20px; margin-bottom: 20px; border-radius: 8px; background: #fafafa; }
+            button { background-color: #2980b9; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+            button:hover { background-color: #34495e; }
+            input[type="text"], input[type="file"] { width: 100%; padding: 10px; margin: 10px 0; box-sizing: border-box; border: 1px solid #ccc; border-radius: 5px; }
+            pre { background: #2c3e50; color: #ecf0f1; padding: 15px; border-radius: 5px; overflow-x: auto; font-size: 14px; }
+            .badge { display: inline-block; padding: 3px 8px; border-radius: 12px; background: #27ae60; color: white; font-size: 12px; margin-bottom: 10px; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>🚀 Live AI Deployment Dashboard</h1>
+            
+            <div class="card">
+                <span class="badge">Text Model</span>
+                <h3>Sentiment Analysis</h3>
+                <input type="text" id="textInput" placeholder="Enter a sentence to analyze...">
+                <button onclick="analyzeSentiment()">Analyze Sentiment</button>
+                <pre id="sentimentResult">Waiting for input...</pre>
+            </div>
+
+            <div class="card">
+                <span class="badge">Vision Model</span>
+                <h3>Image Classification</h3>
+                <input type="file" id="imageInput" accept="image/*">
+                <button onclick="classifyImage()">Upload & Classify</button>
+                <pre id="imageResult">Waiting for input...</pre>
+            </div>
+        </div>
+
+        <script>
+            async function analyzeSentiment() {
+                const text = document.getElementById('textInput').value;
+                if(!text) return alert("Please enter text.");
+                document.getElementById('sentimentResult').innerText = "Processing...";
+                try {
+                    const res = await fetch(`/sentiment?text=${encodeURIComponent(text)}`, { method: 'POST' });
+                    document.getElementById('sentimentResult').innerText = JSON.stringify(await res.json(), null, 2);
+                } catch(e) { document.getElementById('sentimentResult').innerText = "Error connecting to API"; }
+            }
+            async function classifyImage() {
+                const fileInput = document.getElementById('imageInput');
+                if(!fileInput.files[0]) return alert("Please select an image first.");
+                document.getElementById('imageResult').innerText = "Processing...";
+                const formData = new FormData();
+                formData.append("file", fileInput.files[0]);
+                try {
+                    const res = await fetch('/classify-image', { method: 'POST', body: formData });
+                    document.getElementById('imageResult').innerText = JSON.stringify(await res.json(), null, 2);
+                } catch(e) { document.getElementById('imageResult').innerText = "Error connecting to API"; }
+            }
+        </script>
+    </body>
+    </html>
+    """
+    return html_content
