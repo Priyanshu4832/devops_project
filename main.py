@@ -103,6 +103,12 @@ def home():
             <h1>Live AI Deployment</h1>
             
             <div class="card">
+                <span class="badge badge-devops">DevOps Metrics</span>
+                <h3>System Health Observability</h3>
+                <button onclick="checkHealth()">Ping Server</button>
+                <pre id="healthResult">Waiting for ping...</pre>
+            </div>
+            <div class="card">
                 <span class="badge">Text Model</span>
                 <h3>Sentiment Analysis</h3>
                 <input type="text" id="textInput" placeholder="Enter a sentence to analyze...">
@@ -118,12 +124,7 @@ def home():
                 <pre id="imageResult">Waiting for input...</pre>
             </div>
 
-            <div class="card">
-                <span class="badge badge-devops">DevOps Metrics</span>
-                <h3>System Health Observability</h3>
-                <button onclick="checkHealth()">Ping Server</button>
-                <pre id="healthResult">Waiting for ping...</pre>
-            </div>
+            
         </div>
 
         <script>
