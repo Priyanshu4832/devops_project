@@ -11,13 +11,19 @@ import logging
 logging.basicConfig(filename="api_logs.log", level=logging.INFO, 
                     format='%(asctime)s - %(levelname)s - %(message)s')
 
-app = FastAPI(title="Multi-Modal AI DevOps Pipeline", version="2.0")
+app = FastAPI(title="Multi-Modal AI DevOps Pipeline", version="2.1")
 
-# Load Models 
+
 logging.info("Loading AI Models...")
 sentiment_model = pipeline("sentiment-analysis")
-image_model = models.resnet18(weights=models.ResNet18_Weights.DEFAULT)
+
+
+weights = models.ResNet18_Weights.DEFAULT
+image_model = models.resnet18(weights=weights)
 image_model.eval() 
+
+# Extract the 1,000 human-readable class names from PyTorch
+categories = weights.meta["categories"]
 
 transform = transforms.Compose([
     transforms.Resize((224, 224)),
@@ -39,12 +45,24 @@ def classify_image(file: UploadFile = File(...)):
     logging.info(f"Image classification request received: {file.filename}")
     image = Image.open(file.file).convert('RGB')
     img_tensor = transform(image).unsqueeze(0)
+    
     with torch.no_grad():
         outputs = image_model(img_tensor)
+    
     _, predicted = torch.max(outputs, 1)
-    return {"filename": file.filename, "class_id": predicted.item(), "model_version": "resnet18-v1"}
+    class_id = predicted.item()
+    
+    # LOOKUP THE HUMAN READABLE NAME
+    class_name = categories[class_id]
+    
+    return {
+        "filename": file.filename, 
+        "class_id": class_id, 
+        "class_name": class_name, 
+        "model_version": "resnet18-v1"
+    }
 
-# --- THE FRONTEND DASHBOARD ---
+# THE FRONTEND DASHBOARD 
 
 @app.get("/", response_class=HTMLResponse)
 def home():
@@ -55,20 +73,94 @@ def home():
         <meta charset="UTF-8">
         <title>AI DevOps Pipeline</title>
         <style>
-            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background-color: #f4f7f6; color: #333; }
-            .container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-            h1 { color: #2c3e50; text-align: center; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-            .card { border: 1px solid #eaeaea; padding: 20px; margin-bottom: 20px; border-radius: 8px; background: #fafafa; }
-            button { background-color: #2980b9; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.2s; }
-            button:hover { background-color: #34495e; }
-            input[type="text"], input[type="file"] { width: 100%; padding: 10px; margin: 10px 0; box-sizing: border-box; border: 1px solid #ccc; border-radius: 5px; }
-            pre { background: #2c3e50; color: #ecf0f1; padding: 15px; border-radius: 5px; overflow-x: auto; font-size: 14px; }
-            .badge { display: inline-block; padding: 3px 8px; border-radius: 12px; background: #27ae60; color: white; font-size: 12px; margin-bottom: 10px; }
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                max-width: 800px;
+                margin: 0 auto;
+                padding: 20px;
+                background: linear-gradient(135deg, #eef2f7, #f8fafc);
+                color: #2d3436;
+            }
+
+            .container {
+                background: #ffffff;
+                padding: 30px;
+                border-radius: 12px;
+                box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+            }
+
+            h1 {
+                color: #1f2d3d;
+                text-align: center;
+                border-bottom: 2px solid #e6ecf1;
+                padding-bottom: 10px;
+            }
+
+            .card {
+                border: 1px solid #e6ecf1;
+                padding: 20px;
+                margin-bottom: 20px;
+                border-radius: 10px;
+                background: #f9fbfd;
+            }
+
+            button {
+                background: linear-gradient(135deg, #3498db, #5dade2);
+                color: white;
+                border: none;
+                padding: 10px 15px;
+                border-radius: 6px;
+                cursor: pointer;
+                font-weight: bold;
+                transition: all 0.2s ease;
+                margin-top: 10px;
+            }
+
+            button:hover {
+                background: linear-gradient(135deg, #2c80b4, #4a9fd6);
+                transform: translateY(-1px);
+            }
+
+            input[type="text"],
+            input[type="file"] {
+                width: 100%;
+                padding: 10px;
+                margin: 10px 0;
+                box-sizing: border-box;
+                border: 1px solid #dcdfe6;
+                border-radius: 6px;
+                background: #ffffff;
+            }
+
+            pre {
+                background: #1e293b;
+                color: #e2e8f0;
+                padding: 15px;
+                border-radius: 6px;
+                overflow-x: auto;
+                font-size: 14px;
+            }
+
+            .badge {
+                display: inline-block;
+                padding: 4px 10px;
+                border-radius: 12px;
+                background: #2ecc71;
+                color: white;
+                font-size: 12px;
+                margin-bottom: 10px;
+            }
+
+            .highlight {
+                color: #f39c12;
+                font-weight: bold;
+                font-size: 16px;
+            }
         </style>
     </head>
     <body>
         <div class="container">
-            <h1>🚀 Live AI Deployment Dashboard</h1>
+            <h1>Live AI Deployment Dashboard</h1>
             
             <div class="card">
                 <span class="badge">Text Model</span>
@@ -100,12 +192,18 @@ def home():
             async function classifyImage() {
                 const fileInput = document.getElementById('imageInput');
                 if(!fileInput.files[0]) return alert("Please select an image first.");
-                document.getElementById('imageResult').innerText = "Processing...";
+                document.getElementById('imageResult').innerHTML = "Processing...";
                 const formData = new FormData();
                 formData.append("file", fileInput.files[0]);
                 try {
                     const res = await fetch('/classify-image', { method: 'POST', body: formData });
-                    document.getElementById('imageResult').innerText = JSON.stringify(await res.json(), null, 2);
+                    const data = await res.json();
+                    
+                    // Format the output to clearly highlight the English name
+                    let displayHtml = `<span class="highlight">DETECTED: ${data.class_name.toUpperCase()}</span>\\n\\n`;
+                    displayHtml += JSON.stringify(data, null, 2);
+                    
+                    document.getElementById('imageResult').innerHTML = displayHtml;
                 } catch(e) { document.getElementById('imageResult').innerText = "Error connecting to API"; }
             }
         </script>
