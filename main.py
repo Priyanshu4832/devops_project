@@ -9,15 +9,19 @@ import logging
 import time
 import psutil
 
+
 logging.basicConfig(filename="api_logs.log", level=logging.INFO, 
                     format='%(asctime)s - %(levelname)s - %(message)s')
 
 app = FastAPI(title="Multi-Modal AI DevOps Pipeline", version="3.0")
 
+
 START_TIME = time.time()
+
 
 logging.info("Loading AI Models...")
 sentiment_model = pipeline("sentiment-analysis")
+
 
 weights = models.ResNet18_Weights.DEFAULT
 image_model = models.resnet18(weights=weights)
@@ -30,6 +34,8 @@ transform = transforms.Compose([
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
 ])
 logging.info("Models loaded successfully.")
+
+# --- API ENDPOINTS ---
 
 @app.post("/sentiment")
 def analyze_sentiment(text: str):
@@ -59,6 +65,7 @@ def classify_image(file: UploadFile = File(...)):
 
 @app.get("/healthz")
 def health_metrics():
+    """DevOps observability endpoint"""
     uptime_seconds = time.time() - START_TIME
     return {
         "status": "healthy",
@@ -66,6 +73,8 @@ def health_metrics():
         "cpu_usage_percent": psutil.cpu_percent(interval=0.1),
         "ram_usage_percent": psutil.virtual_memory().percent
     }
+
+# --- THE FRONTEND DASHBOARD ---
 
 @app.get("/", response_class=HTMLResponse)
 def home():
@@ -91,8 +100,14 @@ def home():
     </head>
     <body>
         <div class="container">
-            <h1>🚀 Live AI Deployment Dashboard</h1>
+            <h1>Live AI Deployment</h1>
             
+            <div class="card">
+                <span class="badge badge-devops">DevOps Metrics</span>
+                <h3>System Health Observability</h3>
+                <button onclick="checkHealth()">Ping Server</button>
+                <pre id="healthResult">Waiting for ping...</pre>
+            </div>
             <div class="card">
                 <span class="badge">Text Model</span>
                 <h3>Sentiment Analysis</h3>
@@ -109,12 +124,7 @@ def home():
                 <pre id="imageResult">Waiting for input...</pre>
             </div>
 
-            <div class="card">
-                <span class="badge badge-devops">DevOps Metrics</span>
-                <h3>System Health Observability</h3>
-                <button onclick="checkHealth()">Ping Server</button>
-                <pre id="healthResult">Waiting for ping...</pre>
-            </div>
+            
         </div>
 
         <script>
