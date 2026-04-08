@@ -9,20 +9,20 @@ import logging
 import time
 import psutil
 
-# Setup Logging 
+
 logging.basicConfig(filename="api_logs.log", level=logging.INFO, 
                     format='%(asctime)s - %(levelname)s - %(message)s')
 
 app = FastAPI(title="Multi-Modal AI DevOps Pipeline", version="3.0")
 
-# Start timer for server uptime metrics
+
 START_TIME = time.time()
 
-# Load Models 
+
 logging.info("Loading AI Models...")
 sentiment_model = pipeline("sentiment-analysis")
 
-# Define weights explicitly so we can extract the human-readable names
+
 weights = models.ResNet18_Weights.DEFAULT
 image_model = models.resnet18(weights=weights)
 image_model.eval() 
@@ -63,16 +63,7 @@ def classify_image(file: UploadFile = File(...)):
         "model_version": "resnet18-v1"
     }
 
-@app.get("/healthz")
-def health_metrics():
-    """DevOps observability endpoint"""
-    uptime_seconds = time.time() - START_TIME
-    return {
-        "status": "healthy",
-        "uptime_seconds": round(uptime_seconds, 2),
-        "cpu_usage_percent": psutil.cpu_percent(interval=0.1),
-        "ram_usage_percent": psutil.virtual_memory().percent
-    }
+
 
 # --- THE FRONTEND DASHBOARD ---
 
