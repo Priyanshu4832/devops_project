@@ -63,7 +63,16 @@ def classify_image(file: UploadFile = File(...)):
         "model_version": "resnet18-v1"
     }
 
-
+@app.get("/healthz")
+def health_metrics():
+    """DevOps observability endpoint"""
+    uptime_seconds = time.time() - START_TIME
+    return {
+        "status": "healthy",
+        "uptime_seconds": round(uptime_seconds, 2),
+        "cpu_usage_percent": psutil.cpu_percent(interval=0.1),
+        "ram_usage_percent": psutil.virtual_memory().percent
+    }
 
 # --- THE FRONTEND DASHBOARD ---
 
